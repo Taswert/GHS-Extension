@@ -31,9 +31,6 @@
     <Filter Include="cappuccino-sdk\cocos2dx">
       <UniqueIdentifier>{266f3e83-8cc2-413b-b970-360453e46d99}</UniqueIdentifier>
     </Filter>
-    <Filter Include="libs\curl">
-      <UniqueIdentifier>{dcd4b2c5-0a7c-436c-8129-593614e712a7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -1428,41 +1425,17 @@
     <ClInclude Include="..\libs\MinHook\MinHook.h">
       <Filter>libs\MinHook</Filter>
     </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\curl.h">
-      <Filter>libs\curl</Filter>
+    <ClInclude Include="AdminCheck.hpp">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\curlver.h">
-      <Filter>libs\curl</Filter>
+    <ClInclude Include="CreatorLayer.hpp">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\easy.h">
-      <Filter>libs\curl</Filter>
+    <ClInclude Include="LevelInfoLayer.hpp">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\header.h">
-      <Filter>libs\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\mprintf.h">
-      <Filter>libs\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\multi.h">
-      <Filter>libs\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\options.h">
-      <Filter>libs\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\stdcheaders.h">
-      <Filter>libs\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\system.h">
-      <Filter>libs\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\typecheck-gcc.h">
-      <Filter>libs\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\urlapi.h">
-      <Filter>libs\curl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libs\curl\curl\websockets.h">
-      <Filter>libs\curl</Filter>
+    <ClInclude Include="utils.hpp">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1470,6 +1443,18 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="AdminCheck.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="CreatorLayer.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelInfoLayer.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

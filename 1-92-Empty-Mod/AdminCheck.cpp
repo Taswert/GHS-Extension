@@ -46,7 +46,28 @@ void AdminCheck::onAdminCallbackReq(CCHttpClient* client, CCHttpResponse* respon
         manager->setIntGameVariable("0457", 0);
     }
 
-    std::cout << "readBuffer (server response): " << readBuffer << std::endl;
+    //std::cout << "readBuffer (server response): " << readBuffer << std::endl;
+}
+
+void AdminCheck::onAdminInitReq(CCHttpClient* client, CCHttpResponse* response) {
+    if (!response) return;
+
+    if (!response->isSucceed()) return;
+    auto manager = gd::GameManager::sharedState();
+    // Получаем данные ответа
+    std::vector<char>* responseData = response->getResponseData();
+    std::string readBuffer(responseData->begin(), responseData->end());
+
+    if (readBuffer == "1")
+        manager->setIntGameVariable("0457", 1);
+    else if (readBuffer == "2")
+        manager->setIntGameVariable("0457", 2);
+    else if (readBuffer == "3")
+        manager->setIntGameVariable("0457", 3);
+    else if (readBuffer == "4")
+        manager->setIntGameVariable("0457", 4);
+    else if (readBuffer == "-1")
+        manager->setIntGameVariable("0457", 0);
 }
 
 void AdminCheck::adminCheckCallback(CCObject* btn)
@@ -61,49 +82,25 @@ void AdminCheck::adminCheckCallback(CCObject* btn)
 
     checkReq->setResponseCallback(this, callfuncND_selector(AdminCheck::onAdminCallbackReq));
 
-    std::cout << "ADMIN CHECK PROTOCOL" << std::endl;
-    std::cout << udid << " - User device id" << std::endl << std::endl;
+    //std::cout << "ADMIN CHECK PROTOCOL" << std::endl;
+    //std::cout << udid << " - User device id" << std::endl << std::endl;
 
     CCHttpClient::getInstance()->send(checkReq);
     checkReq->release();
 }
 
-
-
-void AdminCheck::adminInitCheck()
+void AdminCheck::adminInitCheck(CCObject* self)
 {
     std::string udid = (gd::GameManager::sharedState())->getPlayerUDID();
 
-    //CURL* curl;
-    //CURLcode res;
-    //std::string readBuffer;
     std::string postfield = "deviceId=" + udid;
-    //curl_global_init(CURL_GLOBAL_ALL);
-    //curl = curl_easy_init();
-    //if (curl) {
-    //    curl_easy_setopt(curl, CURLOPT_URL, "http://85.209.2.73:25568/AdminPanel/CheckAdmin");
-    //    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postfield);
-    //    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    //    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    //    res = curl_easy_perform(curl);
-    //    if (res != CURLE_OK)
-    //        fprintf(stderr, "curl_easy_perform() failed: %s\n",
-    //            curl_easy_strerror(res));
-    //    curl_easy_cleanup(curl);
-    //}
-    //curl_global_cleanup();
-    //if (readBuffer == "1") roleType = 1;
-    //else if (readBuffer == "2") roleType = 2;
-    //else if (readBuffer == "3") roleType = 3;
-    //else if (readBuffer == "4") roleType = 4;
-    //else if (readBuffer == "-1") roleType = 0;
 
     auto checkReq = new CCHttpRequest();
     checkReq->setUrl("http://85.209.2.73:25568/AdminPanel/CheckAdmin");
     checkReq->setRequestType(CCHttpRequest::HttpRequestType::kHttpPost);
     checkReq->setRequestData(postfield.c_str(), postfield.size());
 
-    checkReq->setResponseCallback(this, callfuncND_selector(AdminCheck::onAdminCallbackReq));
+    checkReq->setResponseCallback(self, callfuncND_selector(AdminCheck::onAdminInitReq));
 
     CCHttpClient::getInstance()->send(checkReq);
     checkReq->release();

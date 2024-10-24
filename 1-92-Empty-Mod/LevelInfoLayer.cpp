@@ -17,7 +17,7 @@ bool globalIsFeatured;
 gd::GJGameLevel* level;
 gd::GameLevelManager* lvlmngr;
 CCArray* savedlvls;
-CCLayer* gjlayer;
+gd::LevelInfoLayer* gjlayer;
 CCLayer* rateLayer;
 CCLayer* infoFlalert;
 
@@ -57,6 +57,26 @@ public:
 		else if (readBuffer == "-1")  gd::FLAlertLayer::create(nullptr, "Unrate failure.", "You have no permissions to unrate levels.", "Ok", nullptr, 260.f, false, 0)->show();
 		else if (readBuffer == "-2") gd::FLAlertLayer::create(nullptr, "Unrate failure.", "Level does not exist on servers.", "Ok", nullptr, 260.f, false, 0)->show();
 		else gd::FLAlertLayer::create(nullptr, "Something went wrong...", "You have no internet connection or servers are down.", "Ok", nullptr, 300.f, false, 0)->show();
+		if (gjlayer) gjlayer->downloadLevel();
+	}
+
+	void onDiffrateRequest(CCHttpClient* client, CCHttpResponse* response) {
+		if (!response) {
+			gd::FLAlertLayer::create(nullptr, "No response", "Server don't responding.", "Ok", nullptr, 300.f, false, 0)->show();
+			return;
+		}
+		if (!response->isSucceed()) {
+			gd::FLAlertLayer::create(nullptr, "Request Error", response->getErrorBuffer(), "Ok", nullptr, 300.f, false, 0)->show();
+			return;
+		}
+		std::vector<char>* responseData = response->getResponseData();
+		std::string readBuffer(responseData->begin(), responseData->end());
+
+		if (readBuffer == "1") gd::FLAlertLayer::create(nullptr, "Success!", "Level now has <cy>difficulty</c>!", "Ok", nullptr, 240.f, false, 0)->show();
+		else if (readBuffer == "-1")  gd::FLAlertLayer::create(nullptr, "Failure.", "You have no permissions to give difficulties.", "Ok", nullptr, 260.f, false, 0)->show();
+		else if (readBuffer == "-2") gd::FLAlertLayer::create(nullptr, "Failure.", "Level does not exist on servers.", "Ok", nullptr, 260.f, false, 0)->show();
+		else gd::FLAlertLayer::create(nullptr, "Something went wrong...", "You have no internet connection or servers are down.", "Ok", nullptr, 300.f, false, 0)->show();
+		if (gjlayer) gjlayer->downloadLevel();
 	}
 
 	void onStarRequest(CCHttpClient* client, CCHttpResponse* response) {
@@ -75,6 +95,7 @@ public:
 		else if (readBuffer == "-1")  gd::FLAlertLayer::create(nullptr, "Rate failure.", "You have no permissions to rate levels.", "Ok", nullptr, 260.f, false, 0)->show();
 		else if (readBuffer == "-2") gd::FLAlertLayer::create(nullptr, "Rate failure.", "Level does not exist on servers.", "Ok", nullptr, 260.f, false, 0)->show();
 		else gd::FLAlertLayer::create(nullptr, "Something went wrong...", "You have no internet connection or servers are down.", "Ok", nullptr, 300.f, false, 0)->show();
+		if (gjlayer) gjlayer->downloadLevel();
 	}
 
 	void onFeatureRequest(CCHttpClient* client, CCHttpResponse* response) {
@@ -93,6 +114,7 @@ public:
 		else if (readBuffer == "-1")  gd::FLAlertLayer::create(nullptr, "Rate failure.", "You have no permissions to rate levels.", "Ok", nullptr, 260.f, false, 0)->show();
 		else if (readBuffer == "-2") gd::FLAlertLayer::create(nullptr, "Rate failure.", "Level does not exist on servers.", "Ok", nullptr, 260.f, false, 0)->show();
 		else gd::FLAlertLayer::create(nullptr, "Something went wrong...", "You have no internet connection or servers are down.", "Ok", nullptr, 300.f, false, 0)->show();
+		if (gjlayer) gjlayer->downloadLevel();
 	}
 
 	void onBlockRequest(CCHttpClient* client, CCHttpResponse* response) {
@@ -112,6 +134,7 @@ public:
 		else if (readBuffer == "-1")  gd::FLAlertLayer::create(nullptr, "Block failure.", "You have no permissions to block levels.", "Ok", nullptr, 260.f, false, 0)->show();
 		else if (readBuffer == "-2") gd::FLAlertLayer::create(nullptr, "Rate failure.", "Level does not exist on servers.", "Ok", nullptr, 260.f, false, 0)->show();
 		else gd::FLAlertLayer::create(nullptr, "Something went wrong...", "You have no internet connection or servers are down.", "Ok", nullptr, 300.f, false, 0)->show();
+		if (gjlayer) gjlayer->downloadLevel();
 	}
 
 	void onDeleteRequest(CCHttpClient* client, CCHttpResponse* response) {
@@ -130,6 +153,7 @@ public:
 		else if (readBuffer == "-1")  gd::FLAlertLayer::create(nullptr, "Deletion failure.", "You have no permissions to delete levels.", "Ok", nullptr, 260.f, false, 0)->show();
 		else if (readBuffer == "-2") gd::FLAlertLayer::create(nullptr, "Deletion failure.", "Level does not exist on servers.", "Ok", nullptr, 260.f, false, 0)->show();
 		else gd::FLAlertLayer::create(nullptr, "Something went wrong...", "You have no internet connection or servers are down.", "Ok", nullptr, 300.f, false, 0)->show();
+		if (gjlayer) gjlayer->downloadLevel();
 	}
 
 	void onAddToHoFRequest(CCHttpClient* client, CCHttpResponse* response) {
@@ -148,6 +172,7 @@ public:
 		else if (readBuffer == "-1")  gd::FLAlertLayer::create(nullptr, "Adding failure.", "You have no permissions to add levels \nto <cy>Hall of Fame</c>.", "Ok", nullptr, 290.f, false, 0)->show();
 		else if (readBuffer == "-2") gd::FLAlertLayer::create(nullptr, "Adding failure.", "Level does not exist on servers.", "Ok", nullptr, 260.f, false, 0)->show();
 		else gd::FLAlertLayer::create(nullptr, "Something went wrong...", "You have no internet connection or servers are down.", "Ok", nullptr, 300.f, false, 0)->show();
+		if (gjlayer) gjlayer->downloadLevel();
 	}
 
 	void onRemoveFromHoFRequest(CCHttpClient* client, CCHttpResponse* response) {
@@ -166,6 +191,7 @@ public:
 		else if (readBuffer == "-1")  gd::FLAlertLayer::create(nullptr, "Removing failure.", "You have no permissions to remove levels \nfrom <cy>Hall of Fame</c>.", "Ok", nullptr, 300.f, false, 0)->show();
 		else if (readBuffer == "-2") gd::FLAlertLayer::create(nullptr, "Removing failure.", "Level does not exist on servers.", "Ok", nullptr, 260.f, false, 0)->show();
 		else gd::FLAlertLayer::create(nullptr, "Something went wrong...", "You have no internet connection or servers are down.", "Ok", nullptr, 300.f, false, 0)->show();
+		if (gjlayer) gjlayer->downloadLevel();
 	}
 };
 
@@ -189,10 +215,15 @@ protected:
 			CCHttpClient::getInstance()->send(checkReq);
 			checkReq->release();
 
-			std::cout << "UNRATE PROTOCOL" << std::endl;
-			std::cout << readBuffer << std::endl;
-			std::cout << "STRING - " << postfield << std::endl;
-			std::cout << levelid << std::endl << std::endl;
+			if (rateLayer) {
+				rateLayer->removeMeAndCleanup();
+				rateLayer = nullptr;
+			}
+
+			//std::cout << "UNRATE PROTOCOL" << std::endl;
+			//std::cout << readBuffer << std::endl;
+			//std::cout << "STRING - " << postfield << std::endl;
+			//std::cout << levelid << std::endl << std::endl;
 		}
 	}
 };
@@ -218,9 +249,14 @@ protected:
 			CCHttpClient::getInstance()->send(checkReq);
 			checkReq->release();
 
-			std::cout << "DELETE PROTOCOL" << std::endl;
-			std::cout << readBuffer << std::endl;
-			std::cout << levelid << std::endl << std::endl;
+			if (rateLayer) {
+				rateLayer->removeMeAndCleanup();
+				rateLayer = nullptr;
+			}
+
+			//std::cout << "DELETE PROTOCOL" << std::endl;
+			//std::cout << readBuffer << std::endl;
+			//std::cout << levelid << std::endl << std::endl;
 		}
 	}
 };
@@ -246,63 +282,55 @@ protected:
 			CCHttpClient::getInstance()->send(checkReq);
 			checkReq->release();
 
-			std::cout << "BLOCK PROTOCOL" << std::endl;
-			std::cout << readBuffer << std::endl;
-			std::cout << levelid << std::endl << std::endl;
+			if (rateLayer) {
+				rateLayer->removeMeAndCleanup();
+				rateLayer = nullptr;
+			}
+
+			//std::cout << "BLOCK PROTOCOL" << std::endl;
+			//std::cout << readBuffer << std::endl;
+			//std::cout << levelid << std::endl << std::endl;
 		}
 	}
 };
 
-//class DiffRateAlertProtocol : public gd::FLAlertLayerProtocol {
-//protected:
-//
-//	void FLAlert_Clicked(gd::FLAlertLayer* layer, bool btn2) override
-//	{
-//		if (btn2)
-//		{
-//			std::string readBufferStore;
-//			auto gameManager = gd::GameManager::sharedState();
-//			std::string udid = gameManager->getPlayerUDID();
-//			int levelid = level->m_levelID;
-//
-//			std::string postfield = "deviceId=" + udid + "&levelId=" + std::to_string(levelid) + "&diff=" + std::to_string(globalSelectedDiff) + "&featured=0";
-//
-//			curl_global_init(CURL_GLOBAL_ALL);
-//			curl = curl_easy_init();
-//			if (curl) {
-//				curl_easy_setopt(curl, CURLOPT_URL, "http://85.209.2.73:25568/AdminPanel/RateLevel");
-//				curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postfield);
-//				curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curlWriteCallback);
-//				curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-//				/* Perform the request, res will get the return code */
-//				res = curl_easy_perform(curl);
-//				/* Check for errors */
-//				if (res != CURLE_OK)
-//					fprintf(stderr, "curl_easy_perform() failed: %s\n",
-//						curl_easy_strerror(res));
-//
-//				curl_easy_cleanup(curl);
-//			}
-//			curl_global_cleanup();
-//			std::cout << "DIFF RATE PROTOCOL" << std::endl;
-//			std::cout << readBuffer << std::endl;
-//			std::cout << levelid << std::endl;
-//			std::cout << globalSelectedDiff << " - diff" << std::endl;
-//			if (readBuffer == "1" ) gd::FLAlertLayer::create(nullptr, "Success!", "Level now has <cy>difficulty</c>!", "Ok", nullptr, 240.f, false, 0)->show();
-//			else if (readBuffer == "-1")  gd::FLAlertLayer::create(nullptr, "Failure.", "You have no permissions to give difficulties.", "Ok", nullptr, 260.f, false, 0)->show();
-//			else if (readBuffer == "-2") gd::FLAlertLayer::create(nullptr, "Failure.", "Level does not exist on servers.", "Ok", nullptr, 260.f, false, 0)->show();
-//			else gd::FLAlertLayer::create(nullptr, "Something went wrong...", "You have no internet connection or servers are down.", "Ok", nullptr, 300.f, false, 0)->show();
-//			std::cout << "STRING - " << postfield << std::endl << std::endl;
-//			readBuffer.clear();
-//			rateLayer->removeMeAndCleanup();
-//			rateLayer = nullptr;
-//
-//
-//
-//			//gd::GameLevelManager::sharedState()->levelUpdate(level);
-//		}
-//	}
-//};
+class DiffRateAlertProtocol : public gd::FLAlertLayerProtocol, CCObject {
+protected:
+
+	void FLAlert_Clicked(gd::FLAlertLayer* layer, bool btn2) override
+	{
+		if (btn2)
+		{
+			std::string readBufferStore;
+			auto gameManager = gd::GameManager::sharedState();
+			std::string udid = gameManager->getPlayerUDID();
+			int levelid = level->m_levelID;
+
+			std::string postfield = "deviceId=" + udid + "&levelId=" + std::to_string(levelid) + "&stars=0" + "&diff=" + std::to_string(globalSelectedDiff) + "&featured=0";
+			
+			auto checkReq = new CCHttpRequest();
+			checkReq->setUrl("http://85.209.2.73:25568/AdminPanel/RateLevel");
+			checkReq->setRequestType(CCHttpRequest::HttpRequestType::kHttpPost);
+			checkReq->setRequestData(postfield.c_str(), postfield.size());
+			checkReq->setResponseCallback(this, callfuncND_selector(MyRequests::onDiffrateRequest));
+			CCHttpClient::getInstance()->send(checkReq);
+			checkReq->release();
+
+
+			//std::cout << "DIFF RATE PROTOCOL" << std::endl;
+			//std::cout << levelid << std::endl;
+			//std::cout << globalSelectedDiff << " - diff" << std::endl;
+			//std::cout << "STRING - " << postfield << std::endl << std::endl;
+
+			if (rateLayer) {
+				rateLayer->removeMeAndCleanup();
+				rateLayer = nullptr;
+			}
+
+			//gd::GameLevelManager::sharedState()->levelUpdate(level);
+		}
+	}
+};
 
 class StarRateAlertProtocol : public gd::FLAlertLayerProtocol, CCObject {
 protected:
@@ -326,18 +354,18 @@ protected:
 			CCHttpClient::getInstance()->send(checkReq);
 			checkReq->release();
 
-			std::cout << "STAR RATE PROTOCOL" << std::endl;
-			std::cout << readBuffer << std::endl;
-			std::cout << levelid << std::endl;
-			std::cout << globalSelectedStars << " - stars" << std::endl;
-			std::cout << globalSelectedDiff << " - diff" << std::endl;
+			//std::cout << "STAR RATE PROTOCOL" << std::endl;
+			//std::cout << readBuffer << std::endl;
+			//std::cout << levelid << std::endl;
+			//std::cout << globalSelectedStars << " - stars" << std::endl;
+			//std::cout << globalSelectedDiff << " - diff" << std::endl;
 
-			std::cout << "STRING - " << postfield << std::endl << std::endl;
+			//std::cout << "STRING - " << postfield << std::endl << std::endl;
 
-			rateLayer->removeMeAndCleanup();
-			rateLayer = nullptr;
-
-
+			if (rateLayer) {
+				rateLayer->removeMeAndCleanup();
+				rateLayer = nullptr;
+			}
 
 			//gd::GameLevelManager::sharedState()->levelUpdate(level);
 		}
@@ -367,18 +395,18 @@ protected:
 			CCHttpClient::getInstance()->send(checkReq);
 			checkReq->release();
 
-			std::cout << "FEATURE RATE PROTOCOL" << std::endl;
-			std::cout << readBuffer << std::endl;
-			std::cout << levelid << std::endl;
-			std::cout << globalSelectedStars << " - stars" << std::endl;
-			std::cout << globalSelectedDiff << " - diff" << std::endl;
+			//std::cout << "FEATURE RATE PROTOCOL" << std::endl;
+			//std::cout << readBuffer << std::endl;
+			//std::cout << levelid << std::endl;
+			//std::cout << globalSelectedStars << " - stars" << std::endl;
+			//std::cout << globalSelectedDiff << " - diff" << std::endl;
 
-			std::cout << "STRING - " << postfield << std::endl << std::endl;
+			//std::cout << "STRING - " << postfield << std::endl << std::endl;
 
-			rateLayer->removeMeAndCleanup();
-			rateLayer = nullptr;
-
-
+			if (rateLayer) {
+				rateLayer->removeMeAndCleanup();
+				rateLayer = nullptr;
+			}
 
 			//gd::GameLevelManager::sharedState()->levelUpdate(level);
 		}
@@ -406,9 +434,14 @@ protected:
 			CCHttpClient::getInstance()->send(checkReq);
 			checkReq->release();
 
-			std::cout << "ADD TO HOF PROTOCOL" << std::endl;
-			std::cout << "STRING - " << postfield << std::endl;
-			std::cout << levelid << std::endl << std::endl;
+			//std::cout << "ADD TO HOF PROTOCOL" << std::endl;
+			//std::cout << "STRING - " << postfield << std::endl;
+			//std::cout << levelid << std::endl << std::endl;
+
+			if (rateLayer) {
+				rateLayer->removeMeAndCleanup();
+				rateLayer = nullptr;
+			}
 
 			//lvlmngr->levelUpdate(level);
 			//gd::GameLevelManager::sharedState()->levelUpdate(level);
@@ -437,9 +470,14 @@ protected:
 			CCHttpClient::getInstance()->send(checkReq);
 			checkReq->release();
 
-			std::cout << "REMOVE FROM HOF PROTOCOL" << std::endl;
-			std::cout << "STRING - " << postfield << std::endl;
-			std::cout << levelid << std::endl << std::endl;
+			//std::cout << "REMOVE FROM HOF PROTOCOL" << std::endl;
+			//std::cout << "STRING - " << postfield << std::endl;
+			//std::cout << levelid << std::endl << std::endl;
+
+			if (rateLayer) {
+				rateLayer->removeMeAndCleanup();
+				rateLayer = nullptr;
+			}
 
 			//lvlmngr->levelUpdate(level);
 			//gd::GameLevelManager::sharedState()->levelUpdate(level);
@@ -450,7 +488,7 @@ protected:
 UnrateAlertProtocol unrateProtocol;
 DeleteAlertProtocol deleteProtocol;
 BlockAlertProtocol blockProtocol;
-//DiffRateAlertProtocol diffProtocol;
+DiffRateAlertProtocol diffrateProtocol;
 StarRateAlertProtocol starProtocol;
 FeaturedAlertProtocol featureProtocol;
 AddToHofAlertProtocol addToHofProtocol;
@@ -504,6 +542,14 @@ private:
 
 		}
 	}
+	void difrateButtonCallback(CCObject*)
+	{
+		globalSelectedDiff = selectedDiff;
+		if (selectedDiff != 0) {
+			const auto flalert = gd::FLAlertLayer::create(&diffrateProtocol, "Difficulty Rate", "Do you want to give chosen <cy>difficulty</c> to this level?\nThis action will not give any creator points, nor stars.", "No", "Yes", 360.f, false, 0);
+			flalert->show();
+		}
+	}
 
 public:
 
@@ -539,7 +585,9 @@ public:
 		}
 		selectedStar = tag - 100;
 
-		auto submitSprite = this->getChildByTag(458)->getChildByTag(2)->getChildByTag(1);
+		auto submitSprite = this->getChildByTag(458)->getChildByTag(1)->getChildByTag(1);
+		reinterpret_cast<gd::ButtonSprite*>(submitSprite)->setColor({ 255, 255, 255 });
+		submitSprite = this->getChildByTag(458)->getChildByTag(2)->getChildByTag(1);
 		reinterpret_cast<gd::ButtonSprite*>(submitSprite)->setColor({ 255, 255, 255 });
 
 		auto starSprite = this->getChildByTag(460);
@@ -625,7 +673,7 @@ public:
 
 		cocos2d::extension::CCScale9Sprite* bg = cocos2d::extension::CCScale9Sprite::create("GJ_square01.png");
 		auto director = CCDirector::sharedDirector();
-		bg->setContentSize({ 360, 180 });
+		bg->setContentSize({ 380, 180 });
 		bg->setPosition((director->getScreenRight()) / 2, (director->getScreenTop()) / 2);
 		bg->setZOrder(2);
 		this->addChild(bg);
@@ -692,9 +740,7 @@ public:
 
 		//block and delete buttons
 		auto additionalMenu = CCMenu::create();
-		additionalMenu->setPosition((director->getScreenRight()) / 2 + 200, (director->getScreenTop()) / 2 + 60);
 		additionalMenu->setZOrder(3);
-
 		if (gd::GameManager::sharedState()->getIntGameVariable("0457") > 1)
 		{
 			auto deleteLevelSprite = CCSprite::createWithSpriteFrameName("edit_delBtn_001.png");
@@ -706,10 +752,47 @@ public:
 			auto blockLevelButton = gd::CCMenuItemSpriteExtra::create(blockLevelSprite, nullptr, this, menu_selector(MyAwesomeRateLayer::blockButtonCallback));
 			blockLevelButton->setPosition(0, -50);
 
+			additionalMenu->setPosition((director->getScreenRight() / 2 + bg->getContentSize().width / 2 + blockLevelButton->getContentSize().width/2+5), (director->getScreenTop()) / 2 + 60);
+
 			additionalMenu->addChild(deleteLevelButton);
 			additionalMenu->addChild(blockLevelButton);
 		}
 
+		auto additionalMenu2 = CCMenu::create();
+		additionalMenu2->setZOrder(3);
+		// 46x46
+		auto unrateSprite = CCSprite::createWithSpriteFrameName("GJ_rateDiffBtn_001.png");
+		if (!unrateSprite->initWithFile("ghs-extension/GJ_unrateBtnMod_001.png"))
+		{
+			unrateSprite->initWithSpriteFrameName("GJ_rateDiffBtn_001.png");
+			unrateSprite->setColor({ 255, 255, 0 });
+		}
+		auto unrateButton = gd::CCMenuItemSpriteExtra::create(unrateSprite, nullptr, this, menu_selector(LevelInfoLayer::Callback::unrateButton));
+		unrateButton->setPosition({ 0, 51.f });
+
+		auto addToHofSprite = CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png");
+		if (!addToHofSprite->initWithFile("ghs-extension/GJ_addToHofBtn_001.png"))
+		{
+			addToHofSprite->initWithSpriteFrameName("GJ_likeBtn_001.png");
+			addToHofSprite->setColor({ 255, 255, 0 });
+		}
+		auto addToHofButton = gd::CCMenuItemSpriteExtra::create(addToHofSprite, nullptr, this, menu_selector(LevelInfoLayer::Callback::addToHofButton));
+		addToHofButton->setPosition({ 0, 0 });
+
+		auto removeFromHofSprite = CCSprite::createWithSpriteFrameName("GJ_dislikeBtn_001.png");
+		if (!removeFromHofSprite->initWithFile("ghs-extension/GJ_removeFromHofBtn_001.png"))
+		{
+			removeFromHofSprite->initWithSpriteFrameName("GJ_dislikeBtn_001.png");
+			removeFromHofSprite->setColor({ 255, 255, 0 });
+		}
+		auto removeFromHofButton = gd::CCMenuItemSpriteExtra::create(removeFromHofSprite, nullptr, this, menu_selector(LevelInfoLayer::Callback::removeFromHofButton));
+		removeFromHofButton->setPosition({ 0, -51.f });
+		additionalMenu2->addChild(unrateButton);
+		if (gd::GameManager::sharedState()->getIntGameVariable("0457") > 2) {
+			additionalMenu2->addChild(addToHofButton);
+			additionalMenu2->addChild(removeFromHofButton);
+		}
+		additionalMenu2->setPosition({ director->getScreenRight() / 2 - bg->getContentSize().width / 2 - unrateButton->getContentSize().width / 2 - 5, director->getScreenTop() / 2 });
 
 		//submit and cancel buttons
 		auto bottomMenu = CCMenu::create();
@@ -720,23 +803,23 @@ public:
 		submitSprite->setColor({ 166, 166, 166 });
 		submitSprite->setTag(1);
 		auto submitButton = gd::CCMenuItemSpriteExtra::create(submitSprite, nullptr, this, menu_selector(MyAwesomeRateLayer::submitButtonCallback));
-		submitButton->setPosition(60, 0);
-		submitButton->setTag(2);
-
-		//debug submit button label
-		/*auto sblbl = CCLabelBMFont::create("", "chatFont.fnt");
-		sblbl->setString(CCString::createWithFormat("submit address: %p", submitSprite)->getCString());
-		sblbl->setAnchorPoint({ 1.f, 0.5f });
-		sblbl->setPosition({ (director->getScreenRight()) / 2 + 60, (director->getScreenTop()) / 2 - 95 });
-		sblbl->setScale(0.5f);
-		sblbl->setZOrder(100);*/
+		submitButton->setPosition(120, 0);
+		submitButton->setTag(1);
 
 		auto cancelSprite = gd::ButtonSprite::create("Cancel", 90, 0, 2.5f, true, "goldFont.fnt", "GJ_button_01.png", 30.0);
 		auto cancelButton = gd::CCMenuItemSpriteExtra::create(cancelSprite, nullptr, this, menu_selector(MyAwesomeRateLayer::cancelButtonCallback));
-		cancelButton->setPosition(-60, 0);
+		cancelButton->setPosition(-120, 0);
+
+		auto difrateSprite = gd::ButtonSprite::create("Dif. Rate", 90, 0, 2.5f, true, "goldFont.fnt", "GJ_button_01.png", 30.0);
+		difrateSprite->setColor({ 166, 166, 166 });
+		difrateSprite->setTag(1);
+		auto difrateButton = gd::CCMenuItemSpriteExtra::create(difrateSprite, nullptr, this, menu_selector(MyAwesomeRateLayer::difrateButtonCallback));
+		difrateButton->setPosition(0, 0);
+		difrateButton->setTag(2);
 
 		bottomMenu->addChild(submitButton);
 		bottomMenu->addChild(cancelButton);
+		bottomMenu->addChild(difrateButton);
 		bottomMenu->setTag(458);
 		//bottomMenu->setTouchPriority(10);
 		//adding all menus
@@ -746,6 +829,7 @@ public:
 		this->addChild(featureMenu);
 		this->addChild(rateMenu);
 		this->addChild(additionalMenu);
+		this->addChild(additionalMenu2);
 
 		/*addingLayer->setZOrder(457);*/
 
@@ -797,7 +881,7 @@ void LevelInfoLayer::Callback::removeFromHofButton(CCObject*)
 	flalert->show();
 }
 
-bool __fastcall LevelInfoLayer::LevelInfoLayer_init_hook(cocos2d::CCLayer* self, void* edx, gd::GJGameLevel* gjlevel)
+bool __fastcall LevelInfoLayer::LevelInfoLayer_init_hook(gd::LevelInfoLayer* self, void* edx, gd::GJGameLevel* gjlevel)
 {
 	level = gjlevel;
 	gjlayer = self;
@@ -819,51 +903,17 @@ bool __fastcall LevelInfoLayer::LevelInfoLayer_init_hook(cocos2d::CCLayer* self,
 	}
 	auto rateButton = gd::CCMenuItemSpriteExtra::create(starSprite, nullptr, self, menu_selector(MyAwesomeRateLayer::rateCallback));
 
-	auto unrateSprite = CCSprite::createWithSpriteFrameName("GJ_rateDiffBtn_001.png");
-	if (!unrateSprite->initWithFile("ghs-extension/GJ_unrateBtnMod_001.png"))
-	{
-		unrateSprite->initWithSpriteFrameName("GJ_rateDiffBtn_001.png");
-		unrateSprite->setColor({ 255, 255, 0 });
-	}
-	auto unrateButton = gd::CCMenuItemSpriteExtra::create(unrateSprite, nullptr, self, menu_selector(LevelInfoLayer::Callback::unrateButton));
-
-	auto addToHofSprite = CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png");
-	if (!addToHofSprite->initWithFile("ghs-extension/GJ_addToHofBtn_001.png"))
-	{
-		addToHofSprite->initWithSpriteFrameName("GJ_likeBtn_001.png");
-		addToHofSprite->setColor({ 255, 255, 0 });
-	}
-	auto addToHofButton = gd::CCMenuItemSpriteExtra::create(addToHofSprite, nullptr, self, menu_selector(LevelInfoLayer::Callback::addToHofButton));
-
-	auto removeFromHofSprite = CCSprite::createWithSpriteFrameName("GJ_dislikeBtn_001.png");
-	if (!removeFromHofSprite->initWithFile("ghs-extension/GJ_removeFromHofBtn_001.png"))
-	{
-		removeFromHofSprite->initWithSpriteFrameName("GJ_dislikeBtn_001.png");
-		removeFromHofSprite->setColor({ 255, 255, 0 });
-	}
-	auto removeFromHofButton = gd::CCMenuItemSpriteExtra::create(removeFromHofSprite, nullptr, self, menu_selector(LevelInfoLayer::Callback::removeFromHofButton));
 	auto menu2 = CCMenu::create();
-	menu2->setPosition({ 30, 235 });
+	menu2->setPosition({ 30, 135 });
 
 
 
-	if (gd::GameManager::sharedState()->getIntGameVariable("0457") > 0) {
-	menu2->addChild(rateButton);
-	menu2->addChild(unrateButton);
-	}
-	if (gd::GameManager::sharedState()->getIntGameVariable("0457") > 2) {
-		menu2->addChild(addToHofButton);
-		menu2->addChild(removeFromHofButton);
-	}
+	if (gd::GameManager::sharedState()->getIntGameVariable("0457") > 0)
+		menu2->addChild(rateButton);
 	rateButton->setUserObject(self);
-	unrateButton->setPosition(45, -25);
-	addToHofButton->setPosition(45, -75);
+
 	if (gd::GameManager::sharedState()->getUserID() == gjlevel->getUserID())
-		removeFromHofButton->setPosition(45, -125);
-	else if (gjlevel->getPassword() > 0)
-		removeFromHofButton->setPosition(0, -100);
-	else
-		removeFromHofButton->setPosition(0, -50);
+		menu2->setPosition(30, 85);
 
 	self->addChild(menu2);
 	return result;

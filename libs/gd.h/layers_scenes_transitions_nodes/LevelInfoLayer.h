@@ -16,6 +16,10 @@ namespace gd {
 		bool shouldDownloadLevel() {
 			return reinterpret_cast<bool(__thiscall*)(LevelInfoLayer*)>(base + 0x9cc40)(this);
 		}
+
+		void downloadLevel() {
+			return reinterpret_cast<void(__thiscall*)(LevelInfoLayer*)>(base + 0x9ccf0)(this);
+		}
 	};
 }
 

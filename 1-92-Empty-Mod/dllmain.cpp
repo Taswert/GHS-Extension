@@ -5,10 +5,17 @@
 #include "LevelInfoLayer.hpp"
 #include "CreatorLayer.hpp"
 
-//bool (__thiscall* MenuLayer_init)(gd::MenuLayer* self);
-//bool __fastcall MenuLayer_init_H(gd::MenuLayer* self, void* edx) {
-//    if (!MenuLayer_init(self)) return false;
+bool onFirstStart = true;
 
+bool (__thiscall* MenuLayer_init)(gd::MenuLayer* self);
+bool __fastcall MenuLayer_init_H(gd::MenuLayer* self, void* edx) {
+    if (!MenuLayer_init(self)) return false;
+
+    if (onFirstStart) {
+        AdminCheck::adminInitCheck(self);
+        onFirstStart = false;
+    }
+    
     //auto adminCheckSprite = CCSprite::create("GJ_button_03.png");
     //if (!(adminCheckSprite->initWithFile("accountBtn_pendingRequest_001.png")))
     //{
@@ -24,8 +31,8 @@
     //menu->setPosition((CCDirector::sharedDirector()->getScreenRight()) - 25, (CCDirector::sharedDirector()->getScreenTop()) - 25);
     //self->addChild(menu);
     
-//    return true;
-//}
+    return true;
+}
 
 bool(__thiscall* SupportLayer_customSetup)(gd::GJDropDownLayer*);
 void __fastcall SupportLayer_customSetupH(gd::GJDropDownLayer* self) {
@@ -59,16 +66,16 @@ DWORD WINAPI my_thread(void* hModule) {
     
     //83 F8 63 75 0A BE 48 62 52 00 E9 81 01 00 00 83 F8 62 75 0A BE 9C 61 52 00 E9 72 01 00 00 83 F8 61 75 0A BE 00 40 72 00 E9 63 01 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90
     
-    //AllocConsole();
-    //freopen_s(reinterpret_cast<FILE**>(stdout), "CONOUT$", "w", stdout);
+    AllocConsole();
+    freopen_s(reinterpret_cast<FILE**>(stdout), "CONOUT$", "w", stdout);
 
     auto cocos = GetModuleHandleA("libcocos2d.dll");
     auto cocos_ext = GetModuleHandleA("libExtensions.dll");
 
-    //MH_CreateHook(
-        //reinterpret_cast<void*>(gd::base + 0xaf210),
-        //reinterpret_cast<void**>(&MenuLayer_init_H),
-        //reinterpret_cast<void**>(&MenuLayer_init));
+    MH_CreateHook(
+        reinterpret_cast<void*>(gd::base + 0xaf210),
+        reinterpret_cast<void**>(&MenuLayer_init_H),
+        reinterpret_cast<void**>(&MenuLayer_init));
 
     MH_CreateHook(
         reinterpret_cast<void*>(gd::base + 0x9bc10),
@@ -89,13 +96,6 @@ DWORD WINAPI my_thread(void* hModule) {
         reinterpret_cast<void*>(gd::base + 0x2cfc3),
         CreatorLayer::CreatorLayer_menu_H,
         reinterpret_cast<void**>(&CreatorLayer::CreatorLayer_menu));
-    /*
-    //Hook example
-    MH_CreateHook(
-        reinterpret_cast<void*>(gd::base + 0xOFFSET),
-        reinterpret_cast<void**>(&Class_Function_H),
-        reinterpret_cast<void**>(&Class_Function));
-    */
 
     MH_EnableHook(MH_ALL_HOOKS);
 
